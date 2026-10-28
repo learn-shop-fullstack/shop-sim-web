@@ -5,6 +5,14 @@
   "description": "API 클라이언트 도구 비교 POC (#1) — main에 머지하지 않는다",
   "type": "module",
   "devDependencies": {
-    "@shop-sim/api-spec": "file:./poc/spec"
+    "@hey-api/openapi-ts": "0.99.0",
+    "@shop-sim/api-spec": "file:./poc/spec",
+    "@types/node": "24.19.2",
+    "@types/react": "19.3.0",
+    "typescript": "6.0.3"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "5.105.0",
+    "react": "19.3.0"
   }
 }
