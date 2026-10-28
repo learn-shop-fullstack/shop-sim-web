@@ -5,11 +5,14 @@
   "description": "API 클라이언트 도구 비교 POC (#1) — main에 머지하지 않는다",
   "type": "module",
   "devDependencies": {
+    "@faker-js/faker": "10.6.0",
     "@hey-api/openapi-ts": "0.99.0",
     "@shop-sim/api-spec": "file:./poc/spec",
     "@types/node": "24.19.2",
     "@types/react": "19.3.0",
+    "msw": "3.0.3",
     "openapi-typescript": "7.13.0",
+    "orval": "8.45.0",
     "typescript": "6.0.3"
   },
   "dependencies": {

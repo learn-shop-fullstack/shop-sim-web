@@ -9,5 +9,5 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": ["heyapi/**/*.ts", "oatsfetch/**/*.ts"]
+  "include": ["heyapi/**/*.ts", "oatsfetch/**/*.ts", "orval/**/*.ts"]
 }
