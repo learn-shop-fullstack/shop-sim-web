@@ -1,0 +1,22 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    devDependencies:
+      '@shop-sim/api-spec':
+        specifier: file:./poc/spec
+        version: file:poc/spec
+
+packages:
+
+  '@shop-sim/api-spec@file:poc/spec':
+    resolution: {directory: poc/spec, type: directory}
+
+snapshots:
+
+  '@shop-sim/api-spec@file:poc/spec': {}

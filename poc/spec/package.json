@@ -1,0 +1,7 @@
+{
+  "name": "@shop-sim/api-spec",
+  "version": "0.1.0",
+  "description": "스펙 패키지 흉내 (POC web#1). 실제 배포는 1단계 GitHub Packages",
+  "files": ["openapi.yaml"],
+  "exports": { "./openapi.yaml": "./openapi.yaml" }
+}

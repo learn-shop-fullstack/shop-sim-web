@@ -1,0 +1,10 @@
+{
+  "name": "shop-sim-web",
+  "version": "0.0.0",
+  "private": true,
+  "description": "API 클라이언트 도구 비교 POC (#1) — main에 머지하지 않는다",
+  "type": "module",
+  "devDependencies": {
+    "@shop-sim/api-spec": "file:./poc/spec"
+  }
+}
