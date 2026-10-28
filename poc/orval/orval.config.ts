@@ -10,8 +10,8 @@ export default defineConfig({
       schemas: './generated/model',
       client: 'react-query',
       httpClient: 'fetch',
-      // 생성 기본값 비교용 고정값. 실제로는 환경 변수를 읽는 mutator가 필요하다
-      baseUrl: 'http://localhost:3000/api',
+      // 생성 시점에 코드에 고정된다. 실행 시점에 바꾸려면 mutator가 필요하다
+      baseUrl: process.env.ORVAL_BASE_URL ?? 'http://localhost:3000/api',
       mock: true,
       // 기본값은 4xx를 반환해서 TanStack Query가 성공으로 처리한다 → throw하게 한다
       override: { fetch: { forceSuccessResponse: true } },
