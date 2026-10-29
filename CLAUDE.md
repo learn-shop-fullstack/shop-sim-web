@@ -57,6 +57,7 @@ packages/
   - 스크립트: `"typecheck": "tsc"`, `"lint": "oxlint --type-aware --deny-warnings"`. TypeScript·oxlint·turbo는 루트에만 설치한다.
   - oxlint 설정은 루트 `.oxlintrc.json`을 찾아 쓴다. 패키지 설정이 필요하면 루트를 `extends`하고, `-c`는 쓰지 않는다(다른 설정 탐색이 꺼진다).
   - `build` 결과물이 `dist/` 밖이면(Next.js의 `.next/` 등) `turbo.json`의 `build.outputs`에 더한다. 빠지면 캐시가 적중해도 결과물이 복원되지 않는다.
+  - 여러 패키지가 쓰는 의존성(스펙 패키지, vitest, TanStack Query 등)은 `pnpm-workspace.yaml`의 `catalog`에 exact로 두고 `package.json`에는 `"catalog:"`로 적는다. `catalogMode: strict`는 `pnpm add`만 막으므로 손으로 적은 버전은 리뷰에서 본다.
   - `transit`이라는 스크립트를 만들지 않는다. `turbo.json`에서 의존 패키지 변경을 typecheck·lint 캐시에 전달하는 빈 노드 이름이다.
 - 함정
   - pnpm이 실제로 쓰는 버전은 `package.json`의 `devEngines.packageManager`다. 어긋나면 경고 없이 그 버전을 받아 실행한다. 올릴 때는 `mise.toml`과 함께, api 레포와 같이 올린다.
@@ -76,6 +77,24 @@ packages/
   - 정적 응답은 스키마만 지킨 값이다(완제품인데 `leadTimeDays: 1`). 도메인 규칙은 지키지 않는다. 동적 모드의 `nextPageToken`은 무작위 문자열이라 페이지 끝이 오지 않는다.
   - turbo strict env 모드라 태스크에는 `turbo.json`에 적은 환경 변수만 들어간다. 앱 dev 태스크에 변수가 필요하면 `env`·`passThroughEnv`에 더한다.
 
+## API 클라이언트 (#10)
+
+- 앱은 `@shop-sim/api-client`(SDK 함수, 스펙 타입, 클라이언트 생성 함수, 오류 타입)와 `@shop-sim/api-client/query`(TanStack Query 옵션)로만 호출한다. 이 진입점이 기본 클라이언트에 오류 정규화 인터셉터를 건다.
+- 생성물(`packages/api-client/src/generated/`)은 커밋하지 않는다. turbo가 typecheck·lint·test 전에 `generate`를 돌린다. 앱 `dev`·`build` 태스크를 만들 때도 `^generate`에 의존하게 한다.
+- 오류 분기: SDK 결과와 쿼리의 `error`는 `ApiError`로 받는다. 생성 타입은 스펙의 오류 응답(`Problem`)만 알아서 `ApiClientError`가 빠져 있다.
+  - `error instanceof ApiClientError`이면 `error.failure.kind`로 나눈다: `network`(응답 없음), `aborted`(호출 쪽 취소, 화면에 오류로 보이지 않는다), `timeout`(`AbortSignal.timeout`), `unexpected`(Problem이 아닌 응답, `status` 있음).
+  - 나머지는 `Problem`이고 `type`으로만 분기한다.
+- 서버 컴포넌트는 `createServerClient((await cookies()).toString())`를 SDK 함수·쿼리 옵션의 `client`로 넘긴다(ADR 0017).
+  - 쿠키는 이 클라이언트에만 담는다. 요청 옵션 `headers`는 queryKey에 들어가 브라우저가 다시 요청하고, 기본 클라이언트는 서버에서 여러 사용자가 함께 쓴다.
+  - 서버와 브라우저는 같은 `baseUrl`을 써야 queryKey가 같다.
+- 새 클라이언트는 `createApiClient`로 만든다. 생성물의 `createClient`로 만들면 오류 인터셉터와 실행 시점 설정(`src/hey-api.ts`의 baseUrl, `parseAs`)이 빠진다.
+- 함정
+  - `parseAs`는 `json`으로 고정했다(기본값 `auto`는 `text/plain` 2xx 본문을 문자열 data로 통과시킨다). CSV 다운로드 등은 호출할 때 `parseAs`를 지정한다.
+  - Problem 판정은 "Problem 형식이고 본문 `status`가 응답 상태 코드와 같다"이다. 스펙의 상태 코드 목록은 런타임에 남지 않아서, 선언하지 않은 상태 코드(예: 500)라도 서버가 Problem을 보내면 Problem이다.
+  - fetch 전 코드 오류(요청 인터셉터, 본문 직렬화)도 `network`로 온다. 원래 오류는 `cause`에 있다.
+  - TanStack Query 기본 재시도는 3회이고 404 Problem도 재시도한다. 재시도 조건은 앱의 `QueryClient` 기본값에서 정한다.
+  - `baseUrl`은 지금 목 서버(`http://localhost:4010`)로 고정이다. 환경 변수 이름은 앱 번들러가 정하므로(`NEXT_PUBLIC_*` 등) 첫 앱에서 정한다.
+
 ## 결정사항
 
 - 스토어: Next.js / 셀러센터·어드민: 각각 React SPA (같은 디자인 시스템·그리드 패키지 공유)
@@ -83,6 +102,7 @@ packages/
 - 화면 구분: 구매자(스토어) / 판매자(셀러센터) / 플랫폼 운영자(어드민). 한 계정이 구매자 겸 판매자라 스토어 ↔ 셀러센터 전환 진입점을 둔다
 - API 클라이언트: Hey API로 `packages/api-client`에 생성하고, 앱은 이 패키지의 공용 코드로만 호출한다. 서버 컴포넌트는 요청마다 쿠키를 담은 클라이언트를 만드는 공용 함수를 쓰고, 오류는 인터셉터가 정규화한 타입으로 분기한다(ADR 0017)
 - 서버 상태 관리: TanStack Query. 스토어는 서버 컴포넌트에서 prefetch하고 `HydrationBoundary`로 브라우저에 넘긴다(ADR 0017)
+- 스펙 패키지 접근: private을 유지한다(공개 전환은 되돌릴 수 없다). CI는 패키지 설정 "Manage Actions access"에 이 레포를 읽기로 추가하고, 워크플로 `GITHUB_TOKEN`(`permissions: packages: read`)을 `pnpm_config__auth`로 넘겨 설치한다. 개인 토큰을 시크릿으로 두지 않는다. 적용과 확인은 web CI 항목에서 한다(#10, api#32)
 
 ## 미결정
 
@@ -91,4 +111,4 @@ packages/
 
 ## 현재 단계
 
-1단계(뼈대 배포) 진행 중. 모노레포 세팅(#4), 스펙 기반 목 서버(#6)를 마쳤다. 다음은 `packages/api-client`. CI는 api-client에서 스펙 패키지 읽기 권한 방식을 정한 뒤 따로 만든다.
+1단계(뼈대 배포) 진행 중. 모노레포 세팅(#4), 스펙 기반 목 서버(#6), `packages/api-client`(#10)를 마쳤다. 다음은 web CI(린트 → 타입 검사 → 테스트 → 빌드)이고, 스펙 패키지 읽기 권한은 결정사항의 방식을 따른다.
