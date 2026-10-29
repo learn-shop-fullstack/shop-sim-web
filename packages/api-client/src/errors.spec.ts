@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { createApiClient } from './client';
 import { ApiClientError, normalizeError } from './errors';
-import { createClient } from './generated/client';
-import { client as defaultClient } from './generated/client.gen';
 import { getProduct } from './generated/sdk.gen';
 
 const productId = '0190a5c3-7b2e-7c4d-9f1a-2b3c4d5e6f70';
@@ -9,11 +8,9 @@ const notFound = { type: 'about:blank', title: 'Not Found', status: 404, detail:
 
 type FakeFetch = (url: unknown, init?: RequestInit) => Promise<Response>;
 
-// 실행 시점 설정을 물려받아 실제 경로(fetch → 본문 해석 → 오류 인터셉터)를 그대로 지나게 한다
+// 실제 경로(fetch → 본문 해석 → 오류 인터셉터)를 그대로 지나게 한다
 function call(fetch: FakeFetch, signal?: AbortSignal) {
-  const client = createClient({ ...defaultClient.getConfig(), fetch });
-  client.interceptors.error.use(normalizeError);
-  return getProduct({ client, path: { productId }, signal });
+  return getProduct({ client: createApiClient({ fetch }), path: { productId }, signal });
 }
 
 const problemResponse = (body: unknown, status: number) =>
