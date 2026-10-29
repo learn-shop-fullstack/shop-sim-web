@@ -7,7 +7,7 @@
     "dev": "prism mock --port 4010 node_modules/@learn-shop-fullstack/shop-sim-api-openapi/openapi.yaml"
   },
   "devDependencies": {
-    "@learn-shop-fullstack/shop-sim-api-openapi": "0.1.0",
+    "@learn-shop-fullstack/shop-sim-api-openapi": "0.1.1",
     "@stoplight/prism-cli": "5.16.0"
   }
 }

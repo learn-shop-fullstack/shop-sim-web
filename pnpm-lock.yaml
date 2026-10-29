@@ -182,8 +182,8 @@ importers:
   packages/mock-server:
     devDependencies:
       '@learn-shop-fullstack/shop-sim-api-openapi':
-        specifier: 0.1.0
-        version: 0.1.0
+        specifier: 0.1.1
+        version: 0.1.1
       '@stoplight/prism-cli':
         specifier: 5.16.0
         version: 5.16.0(supports-color@7.2.0)
@@ -215,8 +215,8 @@ packages:
     peerDependencies:
       jsep: ^0.4.0||^1.0.0
 
-  '@learn-shop-fullstack/shop-sim-api-openapi@0.1.0':
-    resolution: {integrity: sha512-mFj/vGjn6HVmJVhddJtHbP1e3td3ZOB+LjRINeGuXCqK58IWdzDnzlUrds98TzT5n+rMGdWNB54e+mN2rmtSgQ==, tarball: https://npm.pkg.github.com/download/@learn-shop-fullstack/shop-sim-api-openapi/0.1.0/0a98b5779287b33d39a6ae08ede8735277c0cc03}
+  '@learn-shop-fullstack/shop-sim-api-openapi@0.1.1':
+    resolution: {integrity: sha512-nZ21yXjGl9qFpwxnedxtYQJzen6dVxeD0Y47g44gdKSIy54AUYeWHqdM8zs7rcFijyrGNYUXSh9Iw8nyCHv55Q==, tarball: https://npm.pkg.github.com/download/@learn-shop-fullstack/shop-sim-api-openapi/0.1.1/6ca60f0b323360fc24be3d4630bb5059a58c2408}
 
   '@nodable/entities@3.1.0':
     resolution: {integrity: sha512-LsS/DjHr+uDM647Gru/cA8+J3a3HfhttwCKLyuoyN7yXTFCxKBtSgMQBvrW9yNPa2/zDRUNuGPaH5QUFoa4arQ==}
@@ -1215,7 +1215,7 @@ snapshots:
     dependencies:
       jsep: 1.6.0
 
-  '@learn-shop-fullstack/shop-sim-api-openapi@0.1.0': {}
+  '@learn-shop-fullstack/shop-sim-api-openapi@0.1.1': {}
 
   '@nodable/entities@3.1.0': {}
 
