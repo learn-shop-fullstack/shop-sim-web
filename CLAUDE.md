@@ -68,7 +68,7 @@ packages/
 - 처음 한 번: `gh auth refresh -s read:packages`, `mise trust`. 스펙 패키지(GitHub Packages, private) 토큰은 `mise.toml` `[env]`가 `gh auth token`으로 `pnpm_config__auth`에 넣는다.
   - 레포 `.npmrc`에는 스코프 레지스트리만 둔다. pnpm은 레포 `.npmrc`의 토큰과 `${ENV}`를 무시한다.
 - 실행: 루트 `pnpm dev` → `@shop-sim/mock-server`가 `http://localhost:4010`에서 스펙을 서빙한다(Prism 정적 모드, CORS 허용).
-- 스펙 버전은 `packages/mock-server/package.json`에서 exact로 고정한다.
+- 스펙 버전은 `pnpm-workspace.yaml`의 `catalog`에서 exact로 고정한다. 목 서버와 `packages/api-client`가 `catalog:`로 같은 버전을 쓴다.
 - 요청 헤더로 응답 고르기: `Prefer: code=404`(상태 코드), `Prefer: code=400, example=invalidPageToken`(스펙 예시 이름), `Prefer: dynamic=true`(무작위 값).
 - 함정
   - 오류 본문은 스펙의 예시(api `openapi/CONVENTIONS.md` "예시 (목 서버)")를 그대로 돌려준다. 요청 검증에 실패하면 400의 첫 예시(validation-error)라 `pointer`는 실제 위반과 다를 수 있다. 실제 위반은 `sl-violations` 응답 헤더에 있다.

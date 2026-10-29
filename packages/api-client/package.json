@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "0.99.0",
-    "@learn-shop-fullstack/shop-sim-api-openapi": "0.1.1",
+    "@learn-shop-fullstack/shop-sim-api-openapi": "catalog:",
     "@shop-sim/tsconfig": "workspace:*",
     "@tanstack/react-query": "catalog:",
     "vitest": "catalog:"

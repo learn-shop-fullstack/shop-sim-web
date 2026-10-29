@@ -164,6 +164,9 @@ settings:
 
 catalogs:
   default:
+    '@learn-shop-fullstack/shop-sim-api-openapi':
+      specifier: 0.1.1
+      version: 0.1.1
     '@tanstack/react-query':
       specifier: 5.105.0
       version: 5.105.0
@@ -194,7 +197,7 @@ importers:
         specifier: 0.99.0
         version: 0.99.0(typescript@6.0.3)
       '@learn-shop-fullstack/shop-sim-api-openapi':
-        specifier: 0.1.1
+        specifier: 'catalog:'
         version: 0.1.1
       '@shop-sim/tsconfig':
         specifier: workspace:*
@@ -209,7 +212,7 @@ importers:
   packages/mock-server:
     devDependencies:
       '@learn-shop-fullstack/shop-sim-api-openapi':
-        specifier: 0.1.1
+        specifier: 'catalog:'
         version: 0.1.1
       '@stoplight/prism-cli':
         specifier: 5.16.0
