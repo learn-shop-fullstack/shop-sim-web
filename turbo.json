@@ -15,7 +15,9 @@
       "dependsOn": ["transit"]
     },
     "lint": {
-      "dependsOn": ["transit"]
+      "dependsOn": ["transit"],
+      // 공용 설정은 루트에 있어 패키지 입력에 들어가지 않는다. 바뀌면 모든 패키지를 다시 검사한다
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/.oxlintrc.json"]
     },
     "dev": {
       "cache": false,
