@@ -48,6 +48,20 @@ packages/
 - 그리드: AG Grid는 배포본에 Community(MIT)만. Enterprise 기능은 로컬 실험 브랜치에서만.
 - 결제: 토스페이먼츠 **테스트 키만** 쓴다. 키는 환경 변수로 받고 커밋하지 않는다.
 
+## 모노레포 (#4)
+
+- 루트 `pnpm build` / `lint` / `typecheck` / `dev`는 Turborepo로 각 패키지의 같은 이름 스크립트를 돌린다.
+- 패키지·앱을 추가할 때
+  - 내부 패키지 이름은 `@shop-sim/*`. 빌드 없이 TS 소스를 `exports`로 내보내고 변환은 앱의 번들러가 한다(Next.js는 `transpilePackages`).
+  - `tsconfig.json`은 `@shop-sim/tsconfig/base.json`을 extends하고 환경별 설정(lib, jsx, types)만 더한다.
+  - 스크립트: `"typecheck": "tsc"`, `"lint": "oxlint --type-aware --deny-warnings"`. TypeScript·oxlint·turbo는 루트에만 설치한다.
+  - oxlint 설정은 루트 `.oxlintrc.json`을 찾아 쓴다. 패키지 설정이 필요하면 루트를 `extends`하고, `-c`는 쓰지 않는다(다른 설정 탐색이 꺼진다).
+  - `build` 결과물이 `dist/` 밖이면(Next.js의 `.next/` 등) `turbo.json`의 `build.outputs`에 더한다. 빠지면 캐시가 적중해도 결과물이 복원되지 않는다.
+  - `transit`이라는 스크립트를 만들지 않는다. `turbo.json`에서 의존 패키지 변경을 typecheck·lint 캐시에 전달하는 빈 노드 이름이다.
+- 함정
+  - pnpm이 실제로 쓰는 버전은 `package.json`의 `devEngines.packageManager`다. 어긋나면 경고 없이 그 버전을 받아 실행한다. 올릴 때는 `mise.toml`과 함께, api 레포와 같이 올린다.
+  - `CI=true`이면 `pnpm install`이 `--frozen-lockfile`로 동작해 lock 파일을 갱신하지 않는다. 의존성을 바꿀 때는 `--no-frozen-lockfile`을 붙인다.
+
 ## 결정사항
 
 - 스토어: Next.js / 셀러센터·어드민: 각각 React SPA (같은 디자인 시스템·그리드 패키지 공유)
@@ -63,4 +77,4 @@ packages/
 
 ## 현재 단계
 
-1단계(뼈대 배포) 착수 전.
+1단계(뼈대 배포) 진행 중. 모노레포 세팅(#4)을 마쳤다. 다음은 스펙 기반 목 서버, `packages/api-client`. CI는 api-client에서 스펙 패키지 읽기 권한 방식을 정한 뒤 따로 만든다.
