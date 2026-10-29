@@ -7,11 +7,13 @@
   "scripts": {
     "generate": "openapi-ts",
     "typecheck": "tsc",
-    "lint": "oxlint --type-aware --deny-warnings"
+    "lint": "oxlint --type-aware --deny-warnings",
+    "test": "vitest run"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "0.99.0",
     "@learn-shop-fullstack/shop-sim-api-openapi": "0.1.1",
-    "@shop-sim/tsconfig": "workspace:*"
+    "@shop-sim/tsconfig": "workspace:*",
+    "vitest": "5.0.5"
   }
 }
