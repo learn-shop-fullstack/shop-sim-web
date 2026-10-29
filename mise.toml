@@ -1,3 +1,9 @@
 [tools]
 node = "26.12.1"
 pnpm = "12.15.0"
+
+[env]
+# 스펙 패키지(GitHub Packages, private) 설치용 토큰. pnpm은 레포 .npmrc의 ${ENV}를 펼치지 않아서
+# 환경 변수로 넣는다. 스코프별 토큰이라 같은 호스트의 다른 스코프 토큰(~/.npmrc)과 섞이지 않는다.
+# gh에 read:packages 권한이 필요하다. cache_key를 쓰면 토큰이 디스크에 남으므로 쓰지 않는다.
+pnpm_config__auth = '''{"https://npm.pkg.github.com":{"@learn-shop-fullstack":{"authToken":"{{ exec(command='gh auth token') }}"}}}'''

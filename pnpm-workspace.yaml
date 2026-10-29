@@ -2,3 +2,13 @@
 packages:
   - apps/*
   - packages/*
+
+# 우리가 게시하는 스펙 패키지는 게시 직후 바로 받는다(스펙 머지 → 소비자 개발이 같은 날 이어진다).
+# 외부 패키지는 pnpm 기본 게시 후 대기 시간을 그대로 따른다
+minimumReleaseAgeExclude:
+  - '@learn-shop-fullstack/*'
+
+# 설치 스크립트 허용 목록. 목록에 없으면 설치가 실패한다(strictDepBuilds 기본값)
+allowBuilds:
+  # Prism 의존성. 설치 시 사용 통계를 보내는 스크립트라 막는다
+  '@scarf/scarf': false
