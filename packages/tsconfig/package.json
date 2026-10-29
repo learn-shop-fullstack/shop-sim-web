@@ -1,0 +1,6 @@
+{
+  "name": "@shop-sim/tsconfig",
+  "version": "0.0.0",
+  "private": true,
+  "description": "공용 tsconfig. 앱과 패키지는 extends로 받아 환경별 설정(lib, jsx, types)만 더한다"
+}

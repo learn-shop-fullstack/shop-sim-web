@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  // 모든 앱·패키지 공통. tsc는 타입 검사만 하고 변환은 번들러(Next.js, SPA 빌드 도구)가 한다
+  "compilerOptions": {
+    // TS 6 기본값은 해마다 바뀌는 최신 ES라서, TS를 올릴 때 결과가 달라지지 않게 고정한다
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    // 번들러가 처리하는 import를 그대로 둔다(moduleResolution: bundler가 함께 정해진다)
+    "module": "preserve",
+    "moduleDetection": "force",
+    // 파일 단위로 변환하는 번들러가 타입 전용 import를 잘못 남기거나 지우지 않게 한다
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "strict": true,
+    // 배열·Record 인덱싱 결과에 undefined를 포함한다. 그리드 행·API 응답 목록에서 빈 값 처리를 강제한다
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true,
+    "skipLibCheck": true
+  }
+}

@@ -1,0 +1,4 @@
+# 앱(store·seller·admin)과 공용 패키지. 앱끼리는 import하지 않고 공유할 것은 packages/로 올린다
+packages:
+  - apps/*
+  - packages/*

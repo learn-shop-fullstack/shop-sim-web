@@ -1,0 +1,27 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    // 어떤 패키지에도 없는 스크립트 이름이라 실행되는 것은 없다. 의존 패키지의 소스가 바뀌면
+    // 이 노드를 거쳐 캐시가 무효화되므로, typecheck·lint는 의존 순서를 기다리지 않고 병렬로 돌면서도
+    // 바뀐 인터페이스를 놓치지 않는다
+    "transit": {
+      "dependsOn": ["^transit"]
+    },
+    "typecheck": {
+      "dependsOn": ["transit"]
+    },
+    "lint": {
+      "dependsOn": ["transit"],
+      // 공용 설정은 루트에 있어 패키지 입력에 들어가지 않는다. 바뀌면 모든 패키지를 다시 검사한다
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/.oxlintrc.json"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}
