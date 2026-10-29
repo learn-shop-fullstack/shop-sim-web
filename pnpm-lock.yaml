@@ -175,6 +175,9 @@ importers:
       turbo:
         specifier: 2.11.10
         version: 2.11.10
+      typescript:
+        specifier: 6.0.3
+        version: 6.0.3
 
   packages/tsconfig: {}
 
@@ -383,6 +386,11 @@ packages:
     resolution: {integrity: sha512-3GJYwig8ygEI89oaOZdduJX8/aw6O9eRPYHoIt6T3FZl9hkKjiyIspufJoVgqXihPoJu8M5CSV0DlZvzfohBCw==}
     hasBin: true
 
+  typescript@6.0.3:
+    resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
 snapshots:
 
   '@oxlint-tsgolint/darwin-arm64@7.0.2005':
@@ -518,3 +526,5 @@ snapshots:
       '@turbo/linux-arm64': 2.11.10
       '@turbo/windows-64': 2.11.10
       '@turbo/windows-arm64': 2.11.10
+
+  typescript@6.0.3: {}
