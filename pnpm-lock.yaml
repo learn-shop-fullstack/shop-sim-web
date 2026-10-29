@@ -162,6 +162,12 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    vitest:
+      specifier: 5.0.5
+      version: 5.0.5
+
 importers:
 
   .:
@@ -191,7 +197,7 @@ importers:
         specifier: workspace:*
         version: link:../tsconfig
       vitest:
-        specifier: 5.0.5
+        specifier: 'catalog:'
         version: 5.0.5(@types/node@26.6.5)(vite@8.3.5(@types/node@26.6.5)(jiti@2.7.0))
 
   packages/mock-server:
