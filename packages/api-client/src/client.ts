@@ -21,3 +21,6 @@ export function createApiClient(config: Config = {}): Client {
   created.setConfig(config);
   return created;
 }
+
+// CI 실패 확인용 임시 타입 오류(되돌린다)
+export const ciTypeErrorCheck: number = 'x';
