@@ -69,9 +69,10 @@ packages/
   - 레포 `.npmrc`에는 스코프 레지스트리만 둔다. pnpm은 레포 `.npmrc`의 토큰과 `${ENV}`를 무시한다.
 - 실행: 루트 `pnpm dev` → `@shop-sim/mock-server`가 `http://localhost:4010`에서 스펙을 서빙한다(Prism 정적 모드, CORS 허용).
 - 스펙 버전은 `packages/mock-server/package.json`에서 exact로 고정한다.
-- 요청 헤더로 응답 고르기: `Prefer: code=404`(상태 코드), `Prefer: dynamic=true`(무작위 값).
+- 요청 헤더로 응답 고르기: `Prefer: code=404`(상태 코드), `Prefer: code=400, example=invalidPageToken`(스펙 예시 이름), `Prefer: dynamic=true`(무작위 값).
 - 함정
-  - 요청 검증 오류(400)의 본문은 스키마로 만든 의미 없는 값이다(`type: "../dictionary"`, `status: 0`). 실제 위반은 `sl-violations` 응답 헤더에 있다. 스펙 오류 응답에 `examples`가 생기기 전까지 `type` 분기는 목 서버로 확인할 수 없다.
+  - 오류 본문은 스펙의 예시(api `openapi/CONVENTIONS.md` "예시 (목 서버)")를 그대로 돌려준다. 요청 검증에 실패하면 400의 첫 예시(validation-error)라 `pointer`는 실제 위반과 다를 수 있다. 실제 위반은 `sl-violations` 응답 헤더에 있다.
+  - 비즈니스 오류(잘못된 `pageToken`, 없는 상품)는 스스로 내지 않는다. 스키마에 맞는 요청이면 200이다. 그 분기는 `Prefer: code=…, example=…`로 받아 확인한다.
   - 정적 응답은 스키마만 지킨 값이다(완제품인데 `leadTimeDays: 1`). 도메인 규칙은 지키지 않는다. 동적 모드의 `nextPageToken`은 무작위 문자열이라 페이지 끝이 오지 않는다.
   - turbo strict env 모드라 태스크에는 `turbo.json`에 적은 환경 변수만 들어간다. 앱 dev 태스크에 변수가 필요하면 `env`·`passThroughEnv`에 더한다.
 
