@@ -5,4 +5,7 @@ import type { CreateClientConfig } from './generated/client.gen';
 export const createClientConfig: CreateClientConfig = (config) => ({
   ...config,
   baseUrl: 'http://localhost:4010',
+  // 기본값 auto는 text/plain 2xx 본문을 문자열 data로 돌려준다. JSON으로만 읽어 실패를 오류 인터셉터로 보낸다.
+  // JSON이 아닌 응답(CSV 다운로드 등)은 호출할 때 parseAs를 지정한다
+  parseAs: 'json',
 });
