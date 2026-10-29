@@ -27,3 +27,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
       # 잠금 파일과 package.json이 어긋나면 고치지 않고 실패한다
       - run: pnpm install --frozen-lockfile
+      # 각 검사는 turbo가 먼저 api-client의 generate를 돌린다(turbo.json). 같은 job 안에서는
+      # 로컬 캐시(.turbo)가 남아 두 번째부터는 생성을 건너뛴다
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      # 아직 build 스크립트가 있는 패키지가 없어 실행되는 태스크가 없다. 앱이 생기면 여기서 빌드된다
+      - run: pnpm build
