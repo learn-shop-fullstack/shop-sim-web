@@ -9,5 +9,7 @@ export default defineConfig({
     '@hey-api/sdk',
     // 주소 등 클라이언트 설정은 실행 시점 설정 파일에서 정한다. 확장자를 붙이면 생성물 import가 TS5097로 깨진다
     { name: '@hey-api/client-next', runtimeConfigPath: './src/hey-api' },
+    // queryOptions·mutationOptions 등을 만든다. 진입점 @shop-sim/api-client/query로 내보낸다
+    '@tanstack/react-query',
   ],
 });
