@@ -50,7 +50,7 @@ packages/
 
 ## 모노레포 (#4)
 
-- 루트 `pnpm build` / `lint` / `typecheck` / `dev`는 Turborepo로 각 패키지의 같은 이름 스크립트를 돌린다.
+- 루트 `pnpm build` / `lint` / `typecheck` / `test` / `dev`는 Turborepo로 각 패키지의 같은 이름 스크립트를 돌린다.
 - 패키지·앱을 추가할 때
   - 내부 패키지 이름은 `@shop-sim/*`. 빌드 없이 TS 소스를 `exports`로 내보내고 변환은 앱의 번들러가 한다(Next.js는 `transpilePackages`).
   - `tsconfig.json`은 `@shop-sim/tsconfig/base.json`을 extends하고 환경별 설정(lib, jsx, types)만 더한다.
@@ -95,6 +95,14 @@ packages/
   - TanStack Query 기본 재시도는 3회이고 404 Problem도 재시도한다. 재시도 조건은 앱의 `QueryClient` 기본값에서 정한다.
   - `baseUrl`은 지금 목 서버(`http://localhost:4010`)로 고정이다. 환경 변수 이름은 앱 번들러가 정하므로(`NEXT_PUBLIC_*` 등) 첫 앱에서 정한다.
 
+## CI (#12)
+
+- PR과 main 푸시에서 `ci` job이 install → lint → typecheck → test → build를 돈다. main 보호 ruleset이 `ci` 통과를 요구한다(GitHub Actions 앱으로 한정, 브랜치 최신화 필수).
+  - job 이름 `ci`를 바꾸면 ruleset의 필수 체크도 같이 바꾼다. 안 바꾸면 체크가 영원히 대기라 머지가 막힌다.
+  - 워크플로에 `paths` 필터를 걸지 않는다. 필터에 걸린 PR은 체크가 생기지 않아 머지가 막힌다.
+- 스펙 패키지 토큰: mise 단계에만 `GH_TOKEN`(워크플로 토큰)을 넘긴다. `gh auth token`이 그 값을 돌려줘 `mise.toml` `[env]` 템플릿이 그대로 `pnpm_config__auth`를 만든다. `gh`가 인증되지 않으면 `mise install`부터 템플릿 오류로 실패한다.
+- 패키지 설정 "Manage Actions access"에 이 레포가 Read로 있어야 한다. 없으면 `packages: read`가 있어도 install이 403이다. 스펙 패키지를 받는 새 레포도 같은 설정이 필요하다(웹 UI, 패키지 관리자만).
+
 ## 결정사항
 
 - 스토어: Next.js / 셀러센터·어드민: 각각 React SPA (같은 디자인 시스템·그리드 패키지 공유)
@@ -102,7 +110,7 @@ packages/
 - 화면 구분: 구매자(스토어) / 판매자(셀러센터) / 플랫폼 운영자(어드민). 한 계정이 구매자 겸 판매자라 스토어 ↔ 셀러센터 전환 진입점을 둔다
 - API 클라이언트: Hey API로 `packages/api-client`에 생성하고, 앱은 이 패키지의 공용 코드로만 호출한다. 서버 컴포넌트는 요청마다 쿠키를 담은 클라이언트를 만드는 공용 함수를 쓰고, 오류는 인터셉터가 정규화한 타입으로 분기한다(ADR 0017)
 - 서버 상태 관리: TanStack Query. 스토어는 서버 컴포넌트에서 prefetch하고 `HydrationBoundary`로 브라우저에 넘긴다(ADR 0017)
-- 스펙 패키지 접근: private을 유지한다(공개 전환은 되돌릴 수 없다). CI는 패키지 설정 "Manage Actions access"에 이 레포를 읽기로 추가하고, 워크플로 `GITHUB_TOKEN`(`permissions: packages: read`)을 `pnpm_config__auth`로 넘겨 설치한다. 개인 토큰을 시크릿으로 두지 않는다. 적용과 확인은 web CI 항목에서 한다(#10, api#32)
+- 스펙 패키지 접근: private을 유지한다(공개 전환은 되돌릴 수 없다). CI는 패키지 설정 "Manage Actions access"에 이 레포를 읽기로 추가하고, 워크플로 `GITHUB_TOKEN`(`permissions: packages: read`)을 `pnpm_config__auth`로 넘겨 설치한다. 개인 토큰을 시크릿으로 두지 않는다. #12에서 적용해 확인했다(권한 추가 전 403, 추가 후 통과)(#10, api#32)
 
 ## 미결정
 
@@ -111,4 +119,4 @@ packages/
 
 ## 현재 단계
 
-1단계(뼈대 배포) 진행 중. 모노레포 세팅(#4), 스펙 기반 목 서버(#6), `packages/api-client`(#10)를 마쳤다. 다음은 web CI(린트 → 타입 검사 → 테스트 → 빌드)이고, 스펙 패키지 읽기 권한은 결정사항의 방식을 따른다.
+1단계(뼈대 배포) 진행 중. 모노레포 세팅(#4), 스펙 기반 목 서버(#6), `packages/api-client`(#10), web CI(#12)를 마쳤다. 다음은 스토어 상품 목록·상세(SSR)다.

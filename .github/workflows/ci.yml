@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# 기본 GITHUB_TOKEN 권한을 줄인다. 스펙 패키지(GitHub Packages, private) 설치에 packages: read가 필요하다
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      # 액션은 태그가 아니라 커밋 SHA로 고정한다(태그는 옮길 수 있다). 주석의 버전은 사람이 읽는 용도
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # 토큰을 .git/config에 남기지 않는다. 이후 단계에서 git push가 필요 없다
+          persist-credentials: false
+      # mise.toml의 Node·pnpm을 설치하고 [env]를 이후 단계에 내보낸다. [env]의 pnpm_config__auth는
+      # gh auth token으로 토큰을 읽는데, gh는 GH_TOKEN이 있으면 그 값을 돌려준다. 그래서 워크플로
+      # 토큰이 그대로 설치 토큰이 된다. 없으면 템플릿 오류로 이 단계가 실패한다
+      - uses: jdx/mise-action@6be3c7ed4c21d4f76b208d351d95aac273ebb76d # v5.2.4
+        env:
+          GH_TOKEN: ${{ github.token }}
+      # 잠금 파일과 package.json이 어긋나면 고치지 않고 실패한다
+      - run: pnpm install --frozen-lockfile
+      # 각 검사는 turbo가 먼저 api-client의 generate를 돌린다(turbo.json). 같은 job 안에서는
+      # 로컬 캐시(.turbo)가 남아 두 번째부터는 생성을 건너뛴다
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      # 아직 build 스크립트가 있는 패키지가 없어 실행되는 태스크가 없다. 앱이 생기면 여기서 빌드된다
+      - run: pnpm build
