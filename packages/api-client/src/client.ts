@@ -16,5 +16,8 @@ export const defaultClient = withNormalizedErrors(client);
  * 생성물의 createClient를 직접 쓰면 둘 다 빠진다
  */
 export function createApiClient(config: Config = {}): Client {
-  return withNormalizedErrors(createClient({ ...defaultClient.getConfig(), ...config }));
+  const created = withNormalizedErrors(createClient(defaultClient.getConfig()));
+  // 객체 펼치기와 달리 setConfig는 headers를 덮어쓰지 않고 합친다
+  created.setConfig(config);
+  return created;
 }
