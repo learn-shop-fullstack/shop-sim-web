@@ -1,3 +1,4 @@
 node_modules/
 # 토스페이먼츠 테스트 키 등 로컬 비밀 값
 .env
+.turbo/
