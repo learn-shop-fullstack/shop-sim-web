@@ -1,0 +1,8 @@
+{
+  "extends": "@shop-sim/tsconfig/base.json",
+  "compilerOptions": {
+    // 생성 클라이언트가 fetch·Request·Headers 등 웹 표준 API 타입을 쓴다
+    "lib": ["ES2023", "DOM", "DOM.Iterable"]
+  },
+  "include": ["src", "openapi-ts.config.ts"]
+}

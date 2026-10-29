@@ -11,11 +11,16 @@
     "transit": {
       "dependsOn": ["^transit"]
     },
+    // 커밋하지 않는 생성물(api-client)을 만든다. 스크립트가 없는 패키지는 건너뛴다
+    "generate": {
+      "outputs": ["src/generated/**"]
+    },
+    // 생성물을 import하는 검사는 자기 패키지와 의존 패키지의 generate를 기다린다
     "typecheck": {
-      "dependsOn": ["transit"]
+      "dependsOn": ["transit", "generate", "^generate"]
     },
     "lint": {
-      "dependsOn": ["transit"],
+      "dependsOn": ["transit", "generate", "^generate"],
       // 공용 설정은 루트에 있어 패키지 입력에 들어가지 않는다. 바뀌면 모든 패키지를 다시 검사한다
       "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/.oxlintrc.json"]
     },
