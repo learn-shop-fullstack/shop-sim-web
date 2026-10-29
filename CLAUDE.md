@@ -61,6 +61,19 @@ packages/
 - 함정
   - pnpm이 실제로 쓰는 버전은 `package.json`의 `devEngines.packageManager`다. 어긋나면 경고 없이 그 버전을 받아 실행한다. 올릴 때는 `mise.toml`과 함께, api 레포와 같이 올린다.
   - `CI=true`이면 `pnpm install`이 `--frozen-lockfile`로 동작해 lock 파일을 갱신하지 않는다. 의존성을 바꿀 때는 `--no-frozen-lockfile`을 붙인다.
+  - 설치 스크립트가 있는 의존성은 `pnpm-workspace.yaml`의 `allowBuilds`에 허용·거부를 적어야 설치가 통과한다.
+
+## 목 서버 (#6)
+
+- 처음 한 번: `gh auth refresh -s read:packages`, `mise trust`. 스펙 패키지(GitHub Packages, private) 토큰은 `mise.toml` `[env]`가 `gh auth token`으로 `pnpm_config__auth`에 넣는다.
+  - 레포 `.npmrc`에는 스코프 레지스트리만 둔다. pnpm은 레포 `.npmrc`의 토큰과 `${ENV}`를 무시한다.
+- 실행: 루트 `pnpm dev` → `@shop-sim/mock-server`가 `http://localhost:4010`에서 스펙을 서빙한다(Prism 정적 모드, CORS 허용).
+- 스펙 버전은 `packages/mock-server/package.json`에서 exact로 고정한다.
+- 요청 헤더로 응답 고르기: `Prefer: code=404`(상태 코드), `Prefer: dynamic=true`(무작위 값).
+- 함정
+  - 요청 검증 오류(400)의 본문은 스키마로 만든 의미 없는 값이다(`type: "../dictionary"`, `status: 0`). 실제 위반은 `sl-violations` 응답 헤더에 있다. 스펙 오류 응답에 `examples`가 생기기 전까지 `type` 분기는 목 서버로 확인할 수 없다.
+  - 정적 응답은 스키마만 지킨 값이다(완제품인데 `leadTimeDays: 1`). 도메인 규칙은 지키지 않는다. 동적 모드의 `nextPageToken`은 무작위 문자열이라 페이지 끝이 오지 않는다.
+  - turbo strict env 모드라 태스크에는 `turbo.json`에 적은 환경 변수만 들어간다. 앱 dev 태스크에 변수가 필요하면 `env`·`passThroughEnv`에 더한다.
 
 ## 결정사항
 
@@ -77,4 +90,4 @@ packages/
 
 ## 현재 단계
 
-1단계(뼈대 배포) 진행 중. 모노레포 세팅(#4)을 마쳤다. 다음은 스펙 기반 목 서버, `packages/api-client`. CI는 api-client에서 스펙 패키지 읽기 권한 방식을 정한 뒤 따로 만든다.
+1단계(뼈대 배포) 진행 중. 모노레포 세팅(#4), 스펙 기반 목 서버(#6)를 마쳤다. 다음은 `packages/api-client`. CI는 api-client에서 스펙 패키지 읽기 권한 방식을 정한 뒤 따로 만든다.
