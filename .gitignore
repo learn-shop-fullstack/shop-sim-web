@@ -2,3 +2,5 @@ node_modules/
 # 토스페이먼츠 테스트 키 등 로컬 비밀 값
 .env
 .turbo/
+# 스펙 패키지에서 생성한 API 클라이언트 (ADR 0017)
+packages/api-client/src/generated/

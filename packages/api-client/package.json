@@ -1,0 +1,14 @@
+{
+  "name": "@shop-sim/api-client",
+  "version": "0.0.0",
+  "private": true,
+  "description": "스펙 패키지에서 생성한 API 클라이언트와 공용 호출 코드. 앱은 생성 함수를 직접 쓰지 않고 이 패키지를 통해 쓴다(ADR 0017)",
+  "type": "module",
+  "scripts": {
+    "generate": "openapi-ts"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "0.99.0",
+    "@learn-shop-fullstack/shop-sim-api-openapi": "0.1.1"
+  }
+}
