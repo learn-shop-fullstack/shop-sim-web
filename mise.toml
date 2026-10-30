@@ -7,6 +7,10 @@ pnpm = "12.15.0"
 NEXT_TELEMETRY_DISABLED = "1"
 # API 주소(packages/api-client가 서버에서 읽는다). 로컬은 목 서버. 배포 환경은 compose가 넣는다
 API_BASE_URL = "http://localhost:4010"
+# API 주소(ADR 0020). 빌드할 때 번들에 들어간다. 이름은 프레임워크 관례(스토어 NEXT_PUBLIC_, SPA VITE_).
+# 로컬과 CI는 목 서버. 배포 환경은 배포 워크플로가 환경마다 넣어 빌드한다
+NEXT_PUBLIC_API_BASE_URL = "http://localhost:4010"
+VITE_API_BASE_URL = "http://localhost:4010"
 # 스펙 패키지(GitHub Packages, private) 설치용 토큰. pnpm은 레포 .npmrc의 ${ENV}를 펼치지 않아서
 # 환경 변수로 넣는다. 스코프별 토큰이라 같은 호스트의 다른 스코프 토큰(~/.npmrc)과 섞이지 않는다.
 # gh에 read:packages 권한이 필요하다. cache_key를 쓰면 토큰이 디스크에 남으므로 쓰지 않는다.
