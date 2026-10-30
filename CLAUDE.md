@@ -86,9 +86,9 @@ packages/
   - 나머지는 `Problem`이고 `type`으로만 분기한다.
 - 서버 컴포넌트는 `@shop-sim/api-client/server`의 `createServerClient((await cookies()).toString())`를 SDK 함수·쿼리 옵션의 `client`로 넘긴다(ADR 0017).
   - 쿠키는 이 클라이언트에만 담는다. 요청 옵션 `headers`는 queryKey에 들어가 브라우저가 다시 요청하고, 기본 클라이언트는 서버에서 여러 사용자가 함께 쓴다.
-  - 서버와 브라우저는 같은 `baseUrl`을 써야 queryKey가 같다. 서버는 모듈 로드 시 실행 환경의 `API_BASE_URL`을 읽고(로컬 값은 `mise.toml`), 브라우저는 앱이 서버에서 읽은 값을 `setBrowserBaseUrl`로 첫 요청 전에 맞춘다.
+  - 서버와 브라우저는 같은 `baseUrl`을 써야 queryKey가 같다. 기본 클라이언트가 빌드할 때 번들에 들어간 `VITE_API_BASE_URL` 또는 `NEXT_PUBLIC_API_BASE_URL`을 읽어 둘이 구조적으로 같다(`src/hey-api.ts`, 로컬 값은 `mise.toml`).
 - 커서 목록(`pageToken` 파라미터)에는 `listXxxInfiniteOptions`가 생성된다. 쓰는 쪽이 `initialPageParam: {}`(빈 문자열은 `minLength` 위반 400)와 `getNextPageParam: (last) => last.nextPageToken ?? undefined`를 붙인다.
-- 새 클라이언트는 `createApiClient`로 만든다. 생성물의 `createClient`로 만들면 오류 인터셉터와 실행 시점 설정(`src/hey-api.ts`의 baseUrl, `parseAs`)이 빠진다.
+- 새 클라이언트는 `createApiClient`로 만든다. 생성물의 `createClient`로 만들면 오류 인터셉터와 기본 설정(`src/hey-api.ts`의 baseUrl, `parseAs`)이 빠진다.
 - 함정
   - `parseAs`는 `json`으로 고정했다(기본값 `auto`는 `text/plain` 2xx 본문을 문자열 data로 통과시킨다). CSV 다운로드 등은 호출할 때 `parseAs`를 지정한다.
   - Problem 판정은 "Problem 형식이고 본문 `status`가 응답 상태 코드와 같다"이다. 스펙의 상태 코드 목록은 런타임에 남지 않아서, 선언하지 않은 상태 코드(예: 500)라도 서버가 Problem을 보내면 Problem이다.
@@ -96,18 +96,19 @@ packages/
   - TanStack Query 기본 재시도는 404 Problem도 3회 재시도한다. 앱의 `QueryClient` 기본값에서 `isTransientError`(network·timeout·5xx만 true)로 거른다.
   - 생성된 무한 쿼리 옵션은 `queryFn` 타입에 `skipToken`이 있어 `useSuspenseInfiniteQuery`에 넘길 수 없다. `useInfiniteQuery`를 쓴다.
   - `./server`를 import하는 테스트는 `vi.mock('server-only', () => ({}))`가 필요하다(Vitest에는 `react-server` 조건이 없어 throw한다).
+  - `src/hey-api.ts`는 번들러가 치환하는 표현식(`import.meta.env.VITE_*`, `process.env.NEXT_PUBLIC_*`)을 그대로 써야 한다. 변수로 빼거나 구조 분해하면 치환되지 않는다. `VITE_API_BASE_URL` 타입은 이 파일이 선언하므로 SPA의 `vite-env.d.ts`에 다시 선언하지 않는다(선택 여부가 달라 충돌한다).
 
 ## 스토어 (#14)
 
 - 페이지(서버 컴포넌트)는 `getQueryClient()`로 prefetch하고 `HydrationBoundary`로 넘긴다. 서버와 브라우저는 같은 옵션 함수(예: `products/product-pages.ts`)로 쿼리를 만든다.
   - `prefetchQuery`는 실패해도 throw하지 않는다. `getQueryState(queryKey).error`를 보고 404·400 Problem은 `notFound()`, 그 밖은 throw해 `app/error.tsx`로 보낸다. `dehydrate`는 성공한 쿼리만 넘겨서 실패를 그냥 두면 브라우저가 다시 요청한다.
 - `QueryClient`(`app/query-client.ts`): 서버는 요청마다 새로 만들고 재시도하지 않는다(재시도 대기만큼 빈 화면). 브라우저는 하나를 쓰고 일시적 오류만 3회 재시도한다. `staleTime` 60초로 하이드레이션 직후 다시 요청하지 않는다.
-- 루트 layout은 `connection()`으로 요청 시점에 렌더링한다(`API_BASE_URL`을 실행 환경에서 읽으려고). 그래서 모든 페이지가 동적이다. 값이 없으면 500이다.
+- API 주소는 빌드할 때 번들에 들어가 홈과 404는 정적이다. 상품 화면은 쿠키를 읽어 동적이다. `NEXT_PUBLIC_API_BASE_URL`이 없으면 `next.config.ts`에서 build·dev·typegen이 멈춘다.
 - typecheck 스크립트는 `next typegen && tsc`다. `next-env.d.ts`와 `.next/types`(라우트 타입)를 만든 뒤 검사한다. 둘 다 커밋하지 않는다.
 - 함정
   - 오류 화면의 다시 시도는 `retry`(Next 16.4. 16.2 문서의 `unstable_retry`)다. 서버 컴포넌트를 다시 렌더링한다. `reset`은 서버를 다시 부르지 않는다. `error.tsx`는 같은 폴더의 layout 오류를 잡지 못한다.
-  - `mise exec`는 셸에서 넣은 변수보다 `mise.toml` `[env]`를 우선한다. 다른 `API_BASE_URL`로 시험하려면 mise를 거치지 않고 `next start`를 실행한다.
-  - `NEXT_*`는 turbo가 기본으로 태스크에 넘기지만 캐시 해시에 넣지 않는다. 빌드에 박히는 `NEXT_PUBLIC_*`를 쓰면 `build.env`에 적는다.
+  - `mise exec`는 셸에서 넣은 변수보다 `mise.toml` `[env]`를 우선한다. 다른 API 주소로 빌드해 보려면 mise를 거치지 않고 `next build`를 실행한다. 이렇게 직접 실행한 빌드가 store에 `@types/node`를 자동 설치해 `package.json`·lockfile을 바꾼 적이 있다. 끝나면 `git status`를 본다.
+  - `NEXT_*`는 turbo가 기본으로 태스크에 넘기지만 캐시 해시에 넣지 않는다. 번들에 들어가는 변수는 `build.env`에 적는다. 안 적으면 다른 값으로 만든 결과물을 캐시에서 복원한다.
   - api-client 생성물 폴더를 지웠다 다시 만들면 실행 중인 dev 서버(Turbopack)가 옛 모듈을 계속 쓴다. dev 서버를 다시 띄운다.
 
 ## CI (#12)
@@ -125,14 +126,14 @@ packages/
 - 화면 구분: 구매자(스토어) / 판매자(셀러센터) / 플랫폼 운영자(어드민). 한 계정이 구매자 겸 판매자라 스토어 ↔ 셀러센터 전환 진입점을 둔다
 - API 클라이언트: Hey API로 `packages/api-client`에 생성하고, 앱은 이 패키지의 공용 코드로만 호출한다. 서버 컴포넌트는 요청마다 쿠키를 담은 클라이언트를 만드는 공용 함수를 쓰고, 오류는 인터셉터가 정규화한 타입으로 분기한다(ADR 0017)
 - 서버 상태 관리: TanStack Query. 스토어는 서버 컴포넌트에서 prefetch하고 `HydrationBoundary`로 브라우저에 넘긴다(ADR 0017)
-- API 주소: 실행 시점에 주입한다(`API_BASE_URL`). 이미지 하나를 환경 변수만 바꿔 staging·production에 쓴다(ADR 0010). 빌드 시 인라인(`NEXT_PUBLIC_*`)은 환경마다 재빌드가 필요해 쓰지 않는다. 대가로 스토어에 정적 페이지가 없다. 정적이 필요해지면(공지, 비로그인 상품 캐시) 브라우저가 도메인에서 주소를 계산하는 방식이나 Partial Prerendering을 검토한다(#14)
+- SPA 빌드 도구: Vite(정확한 버전 고정)와 `@vitejs/plugin-react`(ADR 0019)
+- API 주소: 빌드할 때 프레임워크 관례대로 주입한다. 스토어 `NEXT_PUBLIC_API_BASE_URL`, SPA `VITE_API_BASE_URL`이고 api-client가 둘 다 읽는다. 값이 없으면 빌드가 실패한다. 대가로 환경(staging·production)마다 이미지를 따로 빌드한다. 번들에 보이는 값이라 공개해도 되는 값만 이 방식으로 넣는다(ADR 0020, 0018 대체, #16)
 - 스펙 패키지 접근: private을 유지한다(공개 전환은 되돌릴 수 없다). CI는 패키지 설정 "Manage Actions access"에 이 레포를 읽기로 추가하고, 워크플로 `GITHUB_TOKEN`(`permissions: packages: read`)을 `pnpm_config__auth`로 넘겨 설치한다. 개인 토큰을 시크릿으로 두지 않는다. #12에서 적용해 확인했다(권한 추가 전 403, 추가 후 통과)(#10, api#32)
 
 ## 미결정
 
 - [ ] 차트 라이브러리
-- [ ] SPA 빌드 도구 (Vite 등)
 
 ## 현재 단계
 
-1단계(뼈대 배포) 진행 중. 모노레포 세팅(#4), 스펙 기반 목 서버(#6), `packages/api-client`(#10), web CI(#12), 스토어 상품 목록·상세(#14)를 마쳤다. 다음은 셀러센터·어드민 빈 레이아웃과 상품 목록이다.
+1단계(뼈대 배포) 진행 중. 모노레포 세팅(#4), 스펙 기반 목 서버(#6), `packages/api-client`(#10), web CI(#12), 스토어 상품 목록·상세(#14), API 주소 빌드 시 주입 전환(#16)을 마쳤다. 다음은 셀러센터·어드민 빈 레이아웃과 상품 목록이다.
