@@ -4,6 +4,9 @@ export default defineConfig({
   // 버전 고정된 스펙 패키지에서 생성한다. 생성물은 커밋하지 않는다
   input: './node_modules/@learn-shop-fullstack/shop-sim-api-openapi/openapi.yaml',
   output: './src/generated',
+  // 커서 페이지네이션 파라미터는 pageToken 하나다(api openapi/CONVENTIONS.md). 기본 키워드(cursor, page 등)는 쓰지 않는다.
+  // 이 파라미터가 있는 operation에 listXxxInfiniteOptions가 생성된다
+  parser: { pagination: { keywords: ['pageToken'] } },
   plugins: [
     '@hey-api/typescript',
     '@hey-api/sdk',

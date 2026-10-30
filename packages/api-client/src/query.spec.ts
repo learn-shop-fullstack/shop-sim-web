@@ -1,6 +1,6 @@
 import { dehydrate, hydrate, isCancelledError, QueryClient } from '@tanstack/react-query';
 import { describe, expect, it, vi } from 'vitest';
-import { getProductOptions } from './query';
+import { getProductOptions, listProductsInfiniteOptions } from './query';
 import { createServerClient } from './server';
 
 const path = { productId: '0190a5c3-7b2e-7c4d-9f1a-2b3c4d5e6f70' };
@@ -44,5 +44,28 @@ describe('getProductOptions', () => {
     await queryClient.cancelQueries({ queryKey: options.queryKey });
     expect(isCancelledError(await fetching)).toBe(true);
     expect(queryClient.getQueryState(options.queryKey)).toMatchObject({ status: 'pending', error: null, fetchStatus: 'idle' });
+  });
+});
+
+describe('listProductsInfiniteOptions', () => {
+  it('첫 페이지는 pageToken 없이, 다음 페이지는 앞 페이지의 nextPageToken으로 요청한다', async () => {
+    const searches: string[] = [];
+    const client = createServerClient('session=a');
+    client.setConfig({
+      fetch: async (url: unknown) => {
+        searches.push(new URL(String(url instanceof Request ? url.url : url)).search);
+        return Response.json({ items: [], nextPageToken: searches.length === 1 ? 'p2' : null });
+      },
+    });
+    const query = new QueryClient();
+    const data = await query.fetchInfiniteQuery({
+      ...listProductsInfiniteOptions({ client, query: { pageSize: 2 } }),
+      // pageToken은 minLength 1이라 빈 문자열을 보내면 400이다. 빈 객체는 첫 요청의 파라미터를 그대로 쓴다
+      initialPageParam: {},
+      getNextPageParam: (last) => last.nextPageToken ?? undefined,
+      pages: 3,
+    });
+    expect(searches).toEqual(['?pageSize=2', '?pageSize=2&pageToken=p2']);
+    expect(data.pages).toHaveLength(2);
   });
 });
