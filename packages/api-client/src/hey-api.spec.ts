@@ -11,13 +11,21 @@ describe('createClientConfig', () => {
     vi.unstubAllEnvs();
   });
 
-  it('모듈 로드 시점의 API_BASE_URL을 baseUrl로 쓴다', async () => {
-    vi.stubEnv('API_BASE_URL', 'https://api.example.test');
-    expect((await loadClient()).getConfig().baseUrl).toBe('https://api.example.test');
+  it('VITE_API_BASE_URL을 baseUrl로 쓴다', async () => {
+    vi.stubEnv('VITE_API_BASE_URL', 'https://vite.example.test');
+    vi.stubEnv('NEXT_PUBLIC_API_BASE_URL', undefined);
+    expect((await loadClient()).getConfig().baseUrl).toBe('https://vite.example.test');
   });
 
-  it('API_BASE_URL이 없으면 baseUrl이 없다(브라우저는 앱이 setConfig로 맞춘다)', async () => {
-    vi.stubEnv('API_BASE_URL', undefined);
+  it('NEXT_PUBLIC_API_BASE_URL을 baseUrl로 쓴다', async () => {
+    vi.stubEnv('VITE_API_BASE_URL', undefined);
+    vi.stubEnv('NEXT_PUBLIC_API_BASE_URL', 'https://next.example.test');
+    expect((await loadClient()).getConfig().baseUrl).toBe('https://next.example.test');
+  });
+
+  it('둘 다 없으면 baseUrl이 없다', async () => {
+    vi.stubEnv('VITE_API_BASE_URL', undefined);
+    vi.stubEnv('NEXT_PUBLIC_API_BASE_URL', undefined);
     expect((await loadClient()).getConfig().baseUrl).toBeUndefined();
   });
 });

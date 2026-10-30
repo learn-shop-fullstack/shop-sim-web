@@ -13,7 +13,7 @@
     "generate": "openapi-ts",
     "typecheck": "tsc",
     "lint": "oxlint --type-aware --deny-warnings",
-    "test": "API_BASE_URL=http://localhost:4010 vitest run"
+    "test": "NEXT_PUBLIC_API_BASE_URL=http://localhost:4010 vitest run"
   },
   "dependencies": {
     "server-only": "0.0.1"

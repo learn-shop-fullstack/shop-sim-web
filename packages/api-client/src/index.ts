@@ -1,7 +1,7 @@
 import type { ApiClientError } from './errors';
 import type { Problem } from './generated/types.gen';
 
-export { createApiClient, setBrowserBaseUrl } from './client';
+export { createApiClient } from './client';
 export { ApiClientError, type ApiClientFailure, isTransientError } from './errors';
 // SDK 함수와 스펙 타입. 생성 클라이언트(createClient)는 내보내지 않는다
 export * from './generated';
