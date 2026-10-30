@@ -1,4 +1,4 @@
-import { createServerClient } from '@shop-sim/api-client';
+import { createServerClient } from '@shop-sim/api-client/server';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { cookies } from 'next/headers';
 import { getQueryClient } from '../query-client';

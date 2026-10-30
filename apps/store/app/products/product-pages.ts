@@ -1,4 +1,4 @@
-import type { createServerClient } from '@shop-sim/api-client';
+import type { createServerClient } from '@shop-sim/api-client/server';
 import { listProductsInfiniteOptions } from '@shop-sim/api-client/query';
 import { infiniteQueryOptions } from '@tanstack/react-query';
 

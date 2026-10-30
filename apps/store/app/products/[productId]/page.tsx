@@ -1,4 +1,5 @@
-import { ApiClientError, createServerClient } from '@shop-sim/api-client';
+import { ApiClientError } from '@shop-sim/api-client';
+import { createServerClient } from '@shop-sim/api-client/server';
 import { getProductOptions } from '@shop-sim/api-client/query';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { cookies } from 'next/headers';
