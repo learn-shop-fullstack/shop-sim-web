@@ -11,6 +11,7 @@
     "lint": "oxlint --type-aware --deny-warnings"
   },
   "dependencies": {
+    "@shop-sim/api-client": "workspace:*",
     "next": "16.4.3",
     "react": "catalog:",
     "react-dom": "catalog:"

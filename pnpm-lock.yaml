@@ -205,6 +205,9 @@ importers:
 
   apps/store:
     dependencies:
+      '@shop-sim/api-client':
+        specifier: workspace:*
+        version: link:../../packages/api-client
       next:
         specifier: 16.4.3
         version: 16.4.3(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
