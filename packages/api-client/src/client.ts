@@ -12,6 +12,14 @@ function withNormalizedErrors(target: Client): Client {
 export const defaultClient = withNormalizedErrors(client);
 
 /**
+ * 브라우저용. 브라우저에는 API_BASE_URL이 없어 기본 클라이언트의 baseUrl이 비어 있다(hey-api.ts).
+ * 서버가 실행 시점에 읽은 값을 받아 첫 요청 전에 맞춘다. 서버와 같은 값이어야 queryKey가 같다
+ */
+export function setBrowserBaseUrl(baseUrl: string): void {
+  defaultClient.setConfig({ baseUrl });
+}
+
+/**
  * 기본 클라이언트의 설정(baseUrl, parseAs)을 물려받고 오류 정규화를 건 새 클라이언트.
  * 생성물의 createClient를 직접 쓰면 둘 다 빠진다
  */
