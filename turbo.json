@@ -31,6 +31,8 @@
     },
     "dev": {
       "dependsOn": ["^generate"],
+      // strict env 모드라 적은 변수만 태스크에 들어간다. dev 서버가 실행 중에 읽는다
+      "passThroughEnv": ["API_BASE_URL"],
       "cache": false,
       "persistent": true
     }

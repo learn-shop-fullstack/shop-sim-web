@@ -12,7 +12,7 @@
     "generate": "openapi-ts",
     "typecheck": "tsc",
     "lint": "oxlint --type-aware --deny-warnings",
-    "test": "vitest run"
+    "test": "API_BASE_URL=http://localhost:4010 vitest run"
   },
   "peerDependencies": {
     "@tanstack/react-query": "catalog:"
