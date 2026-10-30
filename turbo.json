@@ -2,8 +2,10 @@
   "$schema": "https://turborepo.com/schema.json",
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      // 앱 빌드는 의존 패키지(api-client)의 생성물을 번들에 넣는다
+      "dependsOn": ["^build", "^generate"],
+      // Next.js 결과물은 .next/. 그 안의 빌드 캐시와 dev 산출물은 결과물이 아니라 뺀다
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**", "!.next/dev/**"]
     },
     // 어떤 패키지에도 없는 스크립트 이름이라 실행되는 것은 없다. 의존 패키지의 소스가 바뀌면
     // 이 노드를 거쳐 캐시가 무효화되므로, typecheck·lint는 의존 순서를 기다리지 않고 병렬로 돌면서도
@@ -28,6 +30,9 @@
       "dependsOn": ["transit", "generate", "^generate"]
     },
     "dev": {
+      "dependsOn": ["^generate"],
+      // strict env 모드라 적은 변수만 태스크에 들어간다. dev 서버가 실행 중에 읽는다
+      "passThroughEnv": ["API_BASE_URL"],
       "cache": false,
       "persistent": true
     }

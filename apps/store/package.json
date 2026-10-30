@@ -1,0 +1,25 @@
+{
+  "name": "@shop-sim/store",
+  "version": "0.0.0",
+  "private": true,
+  "description": "구매자 스토어. Next.js App Router, 서버 렌더링",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "next build",
+    "typecheck": "next typegen && tsc",
+    "lint": "oxlint --type-aware --deny-warnings"
+  },
+  "dependencies": {
+    "@shop-sim/api-client": "workspace:*",
+    "@tanstack/react-query": "catalog:",
+    "next": "16.4.3",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@shop-sim/tsconfig": "workspace:*",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:"
+  }
+}

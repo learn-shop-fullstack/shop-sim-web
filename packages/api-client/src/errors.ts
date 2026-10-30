@@ -53,3 +53,20 @@ export function normalizeError(
   if (!response.ok && isProblem(error, response.status)) return error;
   return new ApiClientError({ kind: 'unexpected', status: response.status }, error);
 }
+
+/**
+ * 다시 보내면 성공할 수 있는 실패인가. 재시도 횟수·간격은 앱(QueryClient 기본값)이 정하고 이 판정만 쓴다.
+ * 4xx는 같은 요청이면 같은 답이고, 취소는 호출한 쪽의 뜻이라 다시 보내지 않는다
+ */
+export function isTransientError(error: Problem | ApiClientError): boolean {
+  if (!(error instanceof ApiClientError)) return error.status >= 500;
+  switch (error.failure.kind) {
+    case 'network':
+    case 'timeout':
+      return true;
+    case 'aborted':
+      return false;
+    case 'unexpected':
+      return error.failure.status >= 500;
+  }
+}

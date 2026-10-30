@@ -6,13 +6,17 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./query": "./src/query.ts"
+    "./query": "./src/query.ts",
+    "./server": "./src/server.ts"
   },
   "scripts": {
     "generate": "openapi-ts",
     "typecheck": "tsc",
     "lint": "oxlint --type-aware --deny-warnings",
-    "test": "vitest run"
+    "test": "API_BASE_URL=http://localhost:4010 vitest run"
+  },
+  "dependencies": {
+    "server-only": "0.0.1"
   },
   "peerDependencies": {
     "@tanstack/react-query": "catalog:"

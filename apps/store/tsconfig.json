@@ -1,0 +1,12 @@
+{
+  "extends": "@shop-sim/tsconfig/base.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    // 서버·클라이언트 컴포넌트 경계와 라우트 타입을 검사하는 Next.js 편집기 플러그인
+    "plugins": [{ "name": "next" }]
+  },
+  // next-env.d.ts와 .next/types는 next typegen(또는 dev·build)이 만든다
+  "include": ["next-env.d.ts", ".next/types/**/*.ts", ".next/dev/types/**/*.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", ".next"]
+}

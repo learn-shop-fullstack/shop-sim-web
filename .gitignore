@@ -4,3 +4,7 @@ node_modules/
 .turbo/
 # 스펙 패키지에서 생성한 API 클라이언트 (ADR 0017)
 packages/api-client/src/generated/
+
+# Next.js 빌드 결과물과 next typegen이 만드는 타입 파일
+.next/
+next-env.d.ts
