@@ -1,7 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { defaultClient } from './client';
 import { getProduct } from './generated/sdk.gen';
 import { createServerClient } from './server';
+
+// server-only는 react-server 조건이 없는 환경(Vitest의 Node)에서 import하면 throw한다
+vi.mock('server-only', () => ({}));
 
 const productId = '0190a5c3-7b2e-7c4d-9f1a-2b3c4d5e6f70';
 

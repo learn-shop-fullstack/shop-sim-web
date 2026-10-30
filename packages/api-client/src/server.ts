@@ -1,3 +1,5 @@
+// 클라이언트 컴포넌트가 import하면 빌드가 실패한다. 쿠키를 다루는 코드가 브라우저 번들에 들어가지 않게 한다
+import 'server-only';
 import { createApiClient } from './client';
 import type { Client } from './generated/client';
 
