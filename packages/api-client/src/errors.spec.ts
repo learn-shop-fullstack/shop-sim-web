@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createApiClient } from './client';
-import { ApiClientError, normalizeError } from './errors';
+import { ApiClientError, isTransientError, normalizeError } from './errors';
 import { getProduct } from './generated/sdk.gen';
 
 const productId = '0190a5c3-7b2e-7c4d-9f1a-2b3c4d5e6f70';
@@ -59,5 +59,20 @@ describe('normalizeError', () => {
   it('이미 정규화된 오류는 다시 감싸지 않는다', () => {
     const error = new ApiClientError({ kind: 'network' }, new TypeError('fetch failed'));
     expect(normalizeError(error, undefined, {})).toBe(error);
+  });
+});
+
+describe('isTransientError', () => {
+  const cause = new TypeError('fetch failed');
+  it.each([
+    ['network', true, new ApiClientError({ kind: 'network' }, cause)],
+    ['timeout', true, new ApiClientError({ kind: 'timeout' }, cause)],
+    ['aborted', false, new ApiClientError({ kind: 'aborted' }, cause)],
+    ['unexpected 502', true, new ApiClientError({ kind: 'unexpected', status: 502 }, cause)],
+    ['unexpected 200', false, new ApiClientError({ kind: 'unexpected', status: 200 }, cause)],
+    ['Problem 404', false, notFound],
+    ['Problem 503', true, { type: 'about:blank', title: 'Service Unavailable', status: 503 }],
+  ])('%s → 재시도 %s', (_, expected, error) => {
+    expect(isTransientError(error)).toBe(expected);
   });
 });
