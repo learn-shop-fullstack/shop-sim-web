@@ -19,6 +19,7 @@ function RootLayout() {
         <strong>셀러센터</strong>
         <nav>
           <Link to="/">홈</Link>
+          <Link to="/products">상품</Link>
         </nav>
       </header>
       <main>
