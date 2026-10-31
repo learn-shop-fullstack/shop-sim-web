@@ -4,6 +4,9 @@ node_modules/
 .turbo/
 # 스펙 패키지에서 생성한 API 클라이언트 (ADR 0017)
 packages/api-client/src/generated/
+# 셀러센터·어드민 라우트 트리(ADR 0021)와 생성기 임시 폴더
+apps/*/src/generated/
+.tanstack/
 
 # Next.js 빌드 결과물과 next typegen이 만드는 타입 파일
 .next/

@@ -5,17 +5,20 @@
   "description": "셀러센터(판매자). React SPA, Vite(ADR 0019)",
   "type": "module",
   "scripts": {
+    "generate": "tsr generate",
     "dev": "vite --port 3001 --strictPort",
     "build": "vite build",
     "typecheck": "tsc",
     "lint": "oxlint --type-aware --deny-warnings"
   },
   "dependencies": {
+    "@tanstack/react-router": "1.170.46",
     "react": "catalog:",
     "react-dom": "catalog:"
   },
   "devDependencies": {
     "@shop-sim/tsconfig": "workspace:*",
+    "@tanstack/router-cli": "1.167.46",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
