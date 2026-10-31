@@ -20,6 +20,8 @@ catalog:
   '@tanstack/react-query': 5.105.0
   '@types/react': 19.3.0
   '@types/react-dom': 19.3.0
+  # 셀러센터·어드민 Vite React 플러그인(Fast Refresh). vite 메이저와 함께 올린다
+  '@vitejs/plugin-react': 6.1.2
   react: 19.3.1
   react-dom: 19.3.1
   # 셀러센터·어드민 빌드 도구(ADR 0019). Vitest가 요구하는 범위 안에서 함께 올린다

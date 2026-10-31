@@ -6,13 +6,19 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 3001 --strictPort",
-    "build": "vite build"
+    "build": "vite build",
+    "typecheck": "tsc",
+    "lint": "oxlint --type-aware --deny-warnings"
   },
   "dependencies": {
     "react": "catalog:",
     "react-dom": "catalog:"
   },
   "devDependencies": {
+    "@shop-sim/tsconfig": "workspace:*",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
     "vite": "catalog:"
   }
 }
