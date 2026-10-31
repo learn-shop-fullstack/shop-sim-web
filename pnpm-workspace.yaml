@@ -20,8 +20,15 @@ catalog:
   '@tanstack/react-query': 5.105.0
   '@types/react': 19.3.0
   '@types/react-dom': 19.3.0
+  # 셀러센터·어드민 Vite React 플러그인(Fast Refresh). vite 메이저와 함께 올린다
+  '@vitejs/plugin-react': 6.1.2
+  # 셀러센터·어드민 그리드(Community). 두 패키지는 같은 버전으로 함께 올린다
+  ag-grid-community: 36.2.0
+  ag-grid-react: 36.2.0
   react: 19.3.1
   react-dom: 19.3.1
+  # 셀러센터·어드민 빌드 도구(ADR 0019). Vitest가 요구하는 범위 안에서 함께 올린다
+  vite: 8.3.5
   vitest: 5.0.5
 # pnpm add가 catalog 버전만 쓰게 한다. catalog에 없는 버전을 지정하면 실패한다
 catalogMode: strict

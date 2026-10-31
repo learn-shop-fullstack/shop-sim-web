@@ -111,6 +111,21 @@ packages/
   - `NEXT_*`는 turbo가 기본으로 태스크에 넘기지만 캐시 해시에 넣지 않는다. 번들에 들어가는 변수는 `build.env`에 적는다. 안 적으면 다른 값으로 만든 결과물을 캐시에서 복원한다.
   - api-client 생성물 폴더를 지웠다 다시 만들면 실행 중인 dev 서버(Turbopack)가 옛 모듈을 계속 쓴다. dev 서버를 다시 띄운다.
 
+## 셀러센터·어드민 (#18)
+
+- 두 앱은 같은 구성이다(셀러센터 dev 3001, 어드민 3002). 구성을 바꿀 때는 두 앱을 함께 고친다. 공용 패키지로 올리는 일은 별도 이슈로 한다.
+  - `src/query-client.ts`(재시도·`staleTime` 등 쿼리 기본값)는 예외다. store를 포함해 앱마다 따로 두고 각자 다르게 유지한다. 공용화 대상이 아니다.
+- 라우트는 `src/routes/`에 파일로 둔다(ADR 0021). 라우트 트리는 `src/generated/routeTree.gen.ts`에 생성되고 커밋하지 않는다. turbo `generate`(`tsr generate`)가 typecheck·lint 전에, Vite 플러그인이 dev·build 중에 만든다. 둘 다 `tsr.config.json`을 읽는다.
+- 데이터: 라우트 `loader`에서 `context.queryClient.ensureQueryData(옵션)`로 받고, 화면은 같은 옵션을 `useSuspenseQuery`로 읽는다. 라우터 자체 캐시는 끄고(`defaultPreloadStaleTime: 0`) 신선도는 TanStack Query가 정한다.
+- `VITE_API_BASE_URL`이 없으면 `vite.config.ts`의 `requireEnv` 플러그인이 build·dev를 멈춘다.
+- 상품 목록: 판매자·운영자 API가 없어 공개 목록 첫 페이지(100개)를 AG Grid 클라이언트 사이드 행 모델로 정렬·필터한다. 그리드 모듈은 그리드마다 `modules`로 등록하고, 개발 모드에서만 `enableDevValidations()`를 켠다.
+- 함정
+  - `tsr.config.json`의 `generatedRouteTree`를 기본값(`src/routeTree.gen.ts`)으로 두면 turbo `generate` outputs(`src/generated/**`)에 잡히지 않아 캐시가 적중해도 복원되지 않는다.
+  - `Link`의 `to`는 라우터를 `Register`에 등록해야(`main.tsx`) 경로 타입으로 검사된다.
+  - Vite 설정 파일이 실행되는 동안에는 `.env` 파일이 읽히지 않는다. 설정에서 환경 변수를 검사할 때는 플러그인 `configResolved`의 `config.env`를 본다.
+  - `pnpm install`의 "Agent skills awaiting approval"은 TanStack 패키지에 든 에이전트 스킬 파일 안내다. 설치 스크립트와 무관하고 승인하지 않는다.
+  - 없는 경로에도 `index.html`을 돌려줘야 라우터가 화면을 그린다. Vite dev 서버는 기본으로 그렇고, 배포용 정적 파일 서버도 같은 설정이 필요하다.
+
 ## CI (#12)
 
 - PR과 main 푸시에서 `ci` job이 install → lint → typecheck → test → build를 돈다. main 보호 ruleset이 `ci` 통과를 요구한다(GitHub Actions 앱으로 한정, 브랜치 최신화 필수).
@@ -127,6 +142,7 @@ packages/
 - API 클라이언트: Hey API로 `packages/api-client`에 생성하고, 앱은 이 패키지의 공용 코드로만 호출한다. 서버 컴포넌트는 요청마다 쿠키를 담은 클라이언트를 만드는 공용 함수를 쓰고, 오류는 인터셉터가 정규화한 타입으로 분기한다(ADR 0017)
 - 서버 상태 관리: TanStack Query. 스토어는 서버 컴포넌트에서 prefetch하고 `HydrationBoundary`로 브라우저에 넘긴다(ADR 0017)
 - SPA 빌드 도구: Vite(정확한 버전 고정)와 `@vitejs/plugin-react`(ADR 0019)
+- SPA 라우터: TanStack Router, 파일 기반 라우트. URL 쿼리는 라우트 `validateSearch`로 검증하고, 데이터는 라우터 context의 `QueryClient`로 loader에서 미리 받는다(ADR 0021)
 - API 주소: 빌드할 때 프레임워크 관례대로 주입한다. 스토어 `NEXT_PUBLIC_API_BASE_URL`, SPA `VITE_API_BASE_URL`이고 api-client가 둘 다 읽는다. 값이 없으면 빌드가 실패한다. 대가로 환경(staging·production)마다 이미지를 따로 빌드한다. 번들에 보이는 값이라 공개해도 되는 값만 이 방식으로 넣는다(ADR 0020, 0018 대체, #16)
 - 스펙 패키지 접근: private을 유지한다(공개 전환은 되돌릴 수 없다). CI는 패키지 설정 "Manage Actions access"에 이 레포를 읽기로 추가하고, 워크플로 `GITHUB_TOKEN`(`permissions: packages: read`)을 `pnpm_config__auth`로 넘겨 설치한다. 개인 토큰을 시크릿으로 두지 않는다. #12에서 적용해 확인했다(권한 추가 전 403, 추가 후 통과)(#10, api#32)
 
@@ -136,4 +152,4 @@ packages/
 
 ## 현재 단계
 
-1단계(뼈대 배포) 진행 중. 모노레포 세팅(#4), 스펙 기반 목 서버(#6), `packages/api-client`(#10), web CI(#12), 스토어 상품 목록·상세(#14), API 주소 빌드 시 주입 전환(#16)을 마쳤다. 다음은 셀러센터·어드민 빈 레이아웃과 상품 목록이다.
+1단계(뼈대 배포) 진행 중. 모노레포 세팅(#4), 스펙 기반 목 서버(#6), `packages/api-client`(#10), web CI(#12), 스토어 상품 목록·상세(#14), API 주소 빌드 시 주입 전환(#16), 셀러센터·어드민 빈 레이아웃과 상품 목록(#18)을 마쳤다. 다음은 infra 재사용 워크플로를 호출하는 배포다.

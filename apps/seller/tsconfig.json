@@ -1,0 +1,10 @@
+{
+  "extends": "@shop-sim/tsconfig/base.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    // import.meta.env·import.meta.hot과 정적 자원 import 타입
+    "types": ["vite/client"]
+  },
+  "include": ["src", "vite.config.ts"]
+}
