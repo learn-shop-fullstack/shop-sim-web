@@ -8,3 +8,6 @@ packages/api-client/src/generated/
 # Next.js 빌드 결과물과 next typegen이 만드는 타입 파일
 .next/
 next-env.d.ts
+
+# Vite 빌드 결과물(셀러센터·어드민)
+dist/

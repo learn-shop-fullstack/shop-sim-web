@@ -22,6 +22,8 @@ catalog:
   '@types/react-dom': 19.3.0
   react: 19.3.1
   react-dom: 19.3.1
+  # 셀러센터·어드민 빌드 도구(ADR 0019). Vitest가 요구하는 범위 안에서 함께 올린다
+  vite: 8.3.5
   vitest: 5.0.5
 # pnpm add가 catalog 버전만 쓰게 한다. catalog에 없는 버전을 지정하면 실패한다
 catalogMode: strict
