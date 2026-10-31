@@ -19,6 +19,7 @@
   "devDependencies": {
     "@shop-sim/tsconfig": "workspace:*",
     "@tanstack/router-cli": "1.167.46",
+    "@tanstack/router-plugin": "1.168.48",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
