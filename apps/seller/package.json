@@ -12,6 +12,8 @@
     "lint": "oxlint --type-aware --deny-warnings"
   },
   "dependencies": {
+    "@shop-sim/api-client": "workspace:*",
+    "@tanstack/react-query": "catalog:",
     "@tanstack/react-router": "1.170.46",
     "react": "catalog:",
     "react-dom": "catalog:"
